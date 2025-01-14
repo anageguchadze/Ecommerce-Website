@@ -6,14 +6,16 @@ from django.contrib.auth import authenticate, login
 from .serializers import RegisterSerializer, LoginSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout
+from rest_framework.generics import GenericAPIView
 
 # Register View (no changes here)
-class RegisterView(APIView):
+class RegisterView(GenericAPIView):
     permission_classes = [AllowAny]
+    serializer_class = RegisterSerializer
 
     def post(self, request):
         try:
-            serializer = RegisterSerializer(data=request.data)
+            serializer = self.serializer_class(data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response({"message": "User registered successfully."}, status=status.HTTP_201_CREATED)
@@ -22,11 +24,13 @@ class RegisterView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class LoginView(APIView):
-    permission_classes = [AllowAny]
+class LoginView(GenericAPIView):
+    permission_classes = [AllowAny,]
+    serializer_class = LoginSerializer
+    
 
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             # User is validated, now we can generate a token
             user = serializer.validated_data  # Returns the user from the serializer
