@@ -11,6 +11,7 @@ inflection==0.5.1
 mypy-extensions==1.0.0
 packaging==24.2
 pathspec==0.12.1
+pillow==11.1.0
 platformdirs==4.3.6
 PyJWT==2.10.1
 python-dotenv==1.0.1
