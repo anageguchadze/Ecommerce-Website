@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Sale, Discount
+from .models import Sale
 from product_app.models import Product, Category
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -22,11 +22,3 @@ class SaleSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description', 'discount_percentage', 'discount_amount', 
                   'start_date', 'end_date', 'is_active', 'products']
 
-class DiscountSerializer(serializers.ModelSerializer):
-    applicable_categories = CategorySerializer(many=True, read_only=True)
-    applicable_products = ProductSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Discount
-        fields = ['id', 'discount_type', 'discount_value', 'start_date', 'end_date', 
-                  'applicable_categories', 'applicable_products']

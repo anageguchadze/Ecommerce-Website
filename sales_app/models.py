@@ -1,5 +1,6 @@
 from django.db import models
 from product_app.models import Product
+from auth_app.models import CustomUser
 
 class Sale(models.Model):
     name = models.CharField(max_length=255)
@@ -9,8 +10,7 @@ class Sale(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)
-
-    # Many-to-many relationship with products
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     products = models.ManyToManyField(Product, related_name='sales')
 
     def __str__(self):
@@ -18,23 +18,5 @@ class Sale(models.Model):
 
     class Meta:
         db_table = 'sale'
-
-class Discount(models.Model):
-    DISCOUNT_TYPE_CHOICES = [
-        ('percentage', 'Percentage'),
-        ('fixed', 'Fixed'),
-    ]
-    discount_type = models.CharField(max_length=10, choices=DISCOUNT_TYPE_CHOICES)
-    discount_value = models.DecimalField(max_digits=10, decimal_places=2)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    applicable_categories = models.ManyToManyField('product_app.Category', related_name='discounts', blank=True)
-    applicable_products = models.ManyToManyField(Product, related_name='discounts', blank=True)
-
-    def __str__(self):
-        return f"{self.discount_value} {self.discount_type}"
-
-    class Meta:
-        db_table = 'discount'
 
 
