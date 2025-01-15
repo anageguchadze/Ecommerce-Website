@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'auth_app',
     'product_app',
+    'sales_app',
 ]
 
 MIDDLEWARE = [

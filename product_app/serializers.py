@@ -4,7 +4,8 @@ from .models import Category, SubCategory, Product
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id', 'name', 'description', 'image']
+        fields = '__all__'
+        ref_name = 'CategorySerializer_product_app'
 
 class SubCategorySerializer(serializers.ModelSerializer):
     category = CategorySerializer()  # Nested Category Serializer
@@ -14,9 +15,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'category', 'description', 'image']
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()  # Nested Category Serializer
-    subcategory = SubCategorySerializer()  # Nested SubCategory Serializer
-
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'price', 'stock', 'category', 'subcategory', 'image', 'created_at', 'updated_at', 'is_active']
+        fields = '__all__'
+        ref_name = 'ProductSerializer_product_app' 
