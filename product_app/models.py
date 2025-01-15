@@ -40,7 +40,7 @@ class Product(models.Model):
     is_in_stock = models.BooleanField(default=True)
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE, null=True, blank=True)
-    image = models.ImageField(upload_to='product_images/', blank=True, null=True)
+    image = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     discount = models.PositiveIntegerField(default=0)
     final_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
