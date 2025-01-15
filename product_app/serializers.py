@@ -18,7 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
-        ref_name = 'ProductSerializer_product_app' 
+        # ref_name = 'ProductSerializer_product_app' 
 
 
 class SizeSerializer(serializers.ModelSerializer):

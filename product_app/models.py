@@ -44,7 +44,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     discount = models.PositiveIntegerField(default=0)
     final_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    colour = models.CharField(max_length=255)
+    colour = models.CharField(max_length=255, blank=True, null=True)
     size = models.ManyToManyField(Size, related_name='products', blank=True)
     
 
