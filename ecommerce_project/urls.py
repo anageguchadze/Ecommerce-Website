@@ -24,6 +24,7 @@ urlpatterns = [
     path('products/', include('product_app.urls')),
     path('sales/', include('sales_app.urls')),
     path('wishlist/', include('wishlist_app.urls')),
+    path('cart/', include('cart_app.urls')),
     # re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
