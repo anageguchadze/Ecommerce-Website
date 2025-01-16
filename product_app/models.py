@@ -46,7 +46,6 @@ class Product(models.Model):
     final_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     colour = models.CharField(max_length=255, blank=True, null=True)
     size = models.ManyToManyField(Size, related_name='products', blank=True)
-    
 
 
     def save(self, *args, **kwargs):
@@ -61,8 +60,6 @@ class Product(models.Model):
             self.is_in_stock = False
         super().save(*args, **kwargs)
 
-    
-    
 
     def __str__(self):
         return self.name
