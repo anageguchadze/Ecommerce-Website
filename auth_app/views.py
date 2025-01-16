@@ -2,13 +2,13 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.contrib.auth import authenticate, login
-from .serializers import RegisterSerializer, LoginSerializer
+from .serializers import RegisterSerializer, LoginSerializer, PasswordChangeSerializer, AddressSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout
 from rest_framework.generics import GenericAPIView
+from django.contrib.auth import update_session_auth_hash
+from .models import Address
 
-# Register View (no changes here)
 class RegisterView(GenericAPIView):
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
@@ -52,8 +52,6 @@ class LoginView(GenericAPIView):
 
 
 
-
-# Logout View (Invalidate refresh token)
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]  # Requires authentication to log out
 
@@ -71,3 +69,53 @@ class LogoutView(APIView):
             return Response({"message": "Successfully logged out"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordChangeView(APIView):
+    permission_classes = [IsAuthenticated]  # Only authenticated users can change their password
+
+    def post(self, request):
+        """
+        Change the user's password.
+        The user needs to provide current password, new password, and confirm the new password.
+        """
+        user = request.user  # The currently authenticated user
+        serializer = PasswordChangeSerializer(data=request.data, context={'user': user})
+
+        if serializer.is_valid():
+            # Set the new password and save the user
+            new_password = serializer.validated_data['new_password']
+            user.set_password(new_password)
+            user.save()
+
+            # Update session authentication hash to keep the user logged in after changing the password
+            update_session_auth_hash(request, user)
+
+            return Response({"message": "Password updated successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class AddressView(APIView):
+    permission_classes = [IsAuthenticated]  # Only authenticated users can interact with addresses
+
+    def get(self, request):
+        # Fetch the user's address (assuming one address per user)
+        address = Address.objects.filter(user=request.user).first()
+        
+        if address:
+            serializer = AddressSerializer(address)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "No address found for this user."}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        # Create or update the address (if it exists, update it)
+        address, created = Address.objects.get_or_create(user=request.user)
+        
+        # Now, handle the POST request to create or update the address
+        serializer = AddressSerializer(address, data=request.data, partial=True)  # `partial=True` allows updating fields
+        if serializer.is_valid():
+            serializer.save()  # Save the new or updated address
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

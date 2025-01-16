@@ -14,14 +14,20 @@ class SubCategorySerializer(serializers.ModelSerializer):
         model = SubCategory
         fields = '__all__'
 
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = '__all__'
-        # ref_name = 'ProductSerializer_product_app' 
-
-
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Size
         fields = '__all__'
+
+class ProductSerializer(serializers.ModelSerializer):
+    average_rating = serializers.IntegerField(source='review')  # Directly show the review value
+    votes = serializers.SerializerMethodField()  # We will count votes based on reviews.
+
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'price', 'final_price', 'stock', 'category', 'subcategory', 'image', 'average_rating', 'votes', 'size']
+
+    def get_votes(self, obj):
+        # Since we're not using a list, we just return 1 if there's a review
+        return 1 if obj.review > 0 else 0
+

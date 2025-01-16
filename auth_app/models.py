@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.conf import settings
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, name, password=None, **extra_fields):
@@ -47,3 +48,17 @@ class CustomUser(AbstractBaseUser):
 
     class Meta:
         db_table = 'custom_user'  # Ensures a unique table name for this custom user model
+
+
+
+class Address(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='addresses')
+    street = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    country = models.CharField(max_length=100)
+    zip_code = models.CharField(max_length=20)
+    is_primary = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.street}, {self.city}, {self.state}, {self.country}"
