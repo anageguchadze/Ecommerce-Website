@@ -32,7 +32,7 @@ class CartItemViewSet(ModelViewSet):
         user = self.request.user
         if not user.is_authenticated:
             raise PermissionDenied("You must be logged in to view this data.")
-        return self.queryset.filter(user=user)
+        return self.queryset.filter(cart=user)
 
 
 

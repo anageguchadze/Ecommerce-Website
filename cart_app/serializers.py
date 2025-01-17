@@ -23,22 +23,12 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ['id', 'order', 'product', 'product_name', 'quantity']
+        fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)  # Include related order items
 
     class Meta:
         model = Order
-        fields = [
-            'id', 
-            'recipientName', 
-            'recipientPhoneNumber', 
-            'dateOfDelivery', 
-            'deliveryTime', 
-            'street', 
-            'houseNumber', 
-            'total', 
-            'user', 
-            'items',
-        ]
+        fields = '__all__'
+    
