@@ -1,75 +1,68 @@
-from rest_framework import viewsets
-from rest_framework.response import Response
-from .models import Cart, CartItem, Coupon, Order
-from .serializers import CartSerializer, CartItemSerializer, CouponSerializer, OrderSerializer
-from rest_framework.decorators import action
-from rest_framework import status
+from rest_framework.viewsets import ModelViewSet, ViewSet
+from .models import CartItem, Order, OrderItem
+from .serializers import CartItemSerializer, OrderSerializer, OrderItemSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
+import drf_yasg
 
-class CouponViewSet(viewsets.ModelViewSet):
-    queryset = Coupon.objects.all()
-    serializer_class = CouponSerializer
-    permission_classes = [IsAuthenticated]
+# class CouponViewSet(ModelViewSet):
+#     queryset = Coupon.objects.all()
+#     serializer_class = CouponSerializer
+#     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(is_active=True)
+#     def get_queryset(self):
+#         return super().get_queryset().filter(is_active=True)
 
+#     def perform_create(self, serializer):
+#         serializer.save()
 
-class CartItemViewSet(viewsets.ModelViewSet):
+        
+
+class CartItemViewSet(ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        cart = self.request.user.cart.filter(is_active=True).first()
-        if cart:
-            serializer.save(cart=cart)
-        else:
-            raise ValueError("Cart not found or is not active.")
+    def get_queryset(self):
+        # Skip the permission check if we're generating schema with drf_yasg
+        if getattr(self, 'swagger_fake_view', False):
+            return self.queryset.all()
+
+        user = self.request.user
+        if not user.is_authenticated:
+            raise PermissionDenied("You must be logged in to view this data.")
+        return self.queryset.filter(user=user)
 
 
-class CartViewSet(viewsets.ModelViewSet):
-    queryset = Cart.objects.all()
-    serializer_class = CartSerializer
+
+class OrderItemViewSet(ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderItemSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        # Skip the permission check if we're generating schema with drf_yasg
+        if getattr(self, 'swagger_fake_view', False):
+            return self.queryset.all()
 
-    @action(detail=True, methods=['post'])
-    def apply_coupon(self, request, pk=None):
-        cart = self.get_object()
-        coupon_code = request.data.get('coupon_code', None)
-        if coupon_code:
-            try:
-                cart.apply_coupon(coupon_code)
-                return Response({'message': 'Coupon applied successfully'}, status=status.HTTP_200_OK)
-            except ValueError as e:
-                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'error': 'Coupon code is required'}, status=status.HTTP_400_BAD_REQUEST)
+        user = self.request.user
+        if not user.is_authenticated:
+            raise PermissionDenied("You must be logged in to view this data.")
+        return self.queryset.filter(user=user)
+    
 
-
-class OrderViewSet(viewsets.ModelViewSet):
+class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        # Skip the permission check if we're generating schema with drf_yasg
+        if getattr(self, 'swagger_fake_view', False):
+            return self.queryset.all()
 
-    def perform_create(self, serializer):
-        cart = self.request.user.cart.filter(is_active=True).first()
-        if cart:
-            # Calculate subtotal, shipping fee, and total price
-            subtotal = sum(item.quantity * item.product.price for item in cart.items.all())
-            shipping_fee = 0  # Assuming free shipping
-            total_price = subtotal + shipping_fee
-            serializer.save(
-                cart=cart,
-                subtotal=subtotal,
-                shipping_fee=shipping_fee,
-                total_price=total_price
-            )
-        else:
-            raise ValueError("Active cart not found.")
+        user = self.request.user
+        if not user.is_authenticated:
+            raise PermissionDenied("You must be logged in to view this data.")
+        return self.queryset.filter(user=user)
