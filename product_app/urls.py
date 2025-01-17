@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, SubCategoryViewSet, ProductViewSet, NewArrivalsView, BestSellersView
+from .views import CategoryViewSet, SubCategoryViewSet, ProductViewSet, NewArrivalsView, BestSellersView, ImageSliderListView
 
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
@@ -11,4 +11,5 @@ urlpatterns = [
     path('', include(router.urls)), 
     path('new-arrivals/', NewArrivalsView.as_view(), name='new_arrivals'), 
     path('best-sellers/', BestSellersView.as_view(), name='best_sellers'),
+    path('image-sliders/', ImageSliderListView.as_view(), name='image_slider_list'),
 ]

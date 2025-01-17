@@ -69,3 +69,14 @@ class Product(models.Model):
 
     class Meta:
         db_table = 'product'
+
+
+class ImageSlider(models.Model):
+    name = models.CharField(max_length=255, unique=True)  # Name of the slider item
+    image = models.TextField(null=True, blank=True) 
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'image_slider'

@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import Category, SubCategory, Product
-from .serializers import CategorySerializer, SubCategorySerializer, ProductSerializer
+from .models import Category, SubCategory, Product, ImageSlider
+from .serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ImageSliderSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from django.utils import timezone
@@ -61,3 +61,9 @@ class BestSellersView(APIView):
         serializer = ProductSerializer(random_products, many=True)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class ImageSliderListView(generics.ListAPIView):
+    queryset = ImageSlider.objects.all()  # Retrieve all image sliders
+    serializer_class = ImageSliderSerializer
+    permission_classes = [AllowAny]
