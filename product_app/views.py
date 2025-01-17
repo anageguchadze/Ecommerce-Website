@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from django.utils import timezone
 from datetime import timedelta
+from rest_framework.filters import SearchFilter
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -23,6 +24,9 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
+    
+    filter_backends = [SearchFilter]  # Enable search filter
+    search_fields = ['name']  
 
 
 class NewArrivalsView(generics.ListAPIView):
