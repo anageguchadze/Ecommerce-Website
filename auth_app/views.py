@@ -75,10 +75,6 @@ class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]  # Only authenticated users can change their password
 
     def post(self, request):
-        """
-        Change the user's password.
-        The user needs to provide current password, new password, and confirm the new password.
-        """
         user = request.user  # The currently authenticated user
         serializer = PasswordChangeSerializer(data=request.data, context={'user': user})
 
