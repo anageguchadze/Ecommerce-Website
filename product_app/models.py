@@ -1,7 +1,5 @@
 from django.db import models
-from auth_app.models import CustomUser
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.utils.timezone import now
 from django.conf import settings
 
 class Category(models.Model):
@@ -44,6 +42,7 @@ class Product(models.Model):
     is_in_stock = models.BooleanField(default=True)
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE, null=True, blank=True)
+    image = models.TextField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     discount = models.PositiveIntegerField(default=0)
     final_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
@@ -76,17 +75,6 @@ class Product(models.Model):
 
     class Meta:
         db_table = 'product'
-
-
-class ProductImage(models.Model):
-    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)  # Link to the Product
-    image = models.TextField(null=True, blank=True)  # Store image URLs as text for longer strings
-
-    def __str__(self):
-        return f"Image for {self.product.name}"
-
-    class Meta:
-        db_table = 'product_image'
 
 
 class ImageSlider(models.Model):
