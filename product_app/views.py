@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import Category, SubCategory, Product, ImageSlider
-from .serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ImageSliderSerializer
+from .models import Category, SubCategory, Product, ImageSlider, ProductRating
+from .serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ImageSliderSerializer, ProductRatingSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from django.utils import timezone
@@ -67,3 +67,53 @@ class ImageSliderListView(generics.ListAPIView):
     queryset = ImageSlider.objects.all()  # Retrieve all image sliders
     serializer_class = ImageSliderSerializer
     permission_classes = [AllowAny]
+
+
+class ProductRatingView(APIView):
+    permission_classes = [AllowAny]  # Allow everyone to access this endpoint
+
+    def post(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        session_id = request.COOKIES.get('sessionid')  # Retrieve session ID for guests
+        user = request.user if request.user.is_authenticated else None
+
+        if not user and not session_id:
+            return Response({"error": "Unable to identify guest. Ensure cookies are enabled."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the user/session has already rated
+        existing_rating = ProductRating.objects.filter(
+            product=product,
+            user=user if user else None,
+            session_id=session_id if not user else None
+        ).first()
+
+        if existing_rating:
+            return Response({"error": "You have already rated this product"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate and save the rating
+        serializer = ProductRatingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(
+            user=user, 
+            session_id=session_id if not user else None,
+            product=product
+        )
+
+        # Update the average rating of the product
+        product.update_average_rating()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        ratings = product.ratings.all()
+        serializer = ProductRatingSerializer(ratings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

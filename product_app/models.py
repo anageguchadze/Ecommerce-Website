@@ -2,6 +2,7 @@ from django.db import models
 from auth_app.models import CustomUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.timezone import now
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -52,6 +53,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     
 
+    def update_average_rating(self):
+        ratings = self.ratings.all()
+        total_ratings = ratings.count()
+        self.average_rating = sum(rating.rating for rating in ratings) / total_ratings if total_ratings > 0 else 0
+        self.save()
+
+
     def save(self, *args, **kwargs):
         if self.discount > 0:
             self.final_price = self.price - self.price * (self.discount / 100)
@@ -80,3 +88,15 @@ class ImageSlider(models.Model):
 
     class Meta:
         db_table = 'image_slider'
+
+
+class ProductRating(models.Model):
+    product = models.ForeignKey(Product, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)  # Optional for guests
+    session_id = models.CharField(max_length=255, null=True, blank=True)  # Guest tracking
+    rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('product', 'user', 'session_id')  # Ensure one rating per user/session
+        db_table = 'product_rating'

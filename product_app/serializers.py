@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, SubCategory, Product, Size, ImageSlider
+from .models import Category, SubCategory, Product, Size, ImageSlider, ProductRating
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,3 +34,11 @@ class ImageSliderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImageSlider
         fields = ['name', 'image']
+
+    
+class ProductRatingSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)  # Automatically set the user from the request
+
+    class Meta:
+        model = ProductRating
+        fields = ['id', 'product', 'user', 'rating', 'created_at']
