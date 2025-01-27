@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import Category, SubCategory, Product, ImageSlider, ProductRating
-from .serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ImageSliderSerializer, ProductRatingSerializer
+from .models import Category, SubCategory, Product, ImageSlider, ProductRating, ProductImage
+from .serializers import CategorySerializer, SubCategorySerializer, ProductSerializer, ImageSliderSerializer, ProductRatingSerializer, ProductImageSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework import generics
 from django.utils import timezone
@@ -134,4 +134,29 @@ class ProductRatingView(APIView):
 
         ratings = product.ratings.all()
         serializer = ProductRatingSerializer(ratings, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductImageView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        data = request.data
+        data['product'] = product.id
+        serializer = ProductImageSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get(self, request, product_id):
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        images = ProductImage.objects.filter(product=product)
+        serializer = ProductImageSerializer(images, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

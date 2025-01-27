@@ -77,6 +77,16 @@ class Product(models.Model):
         db_table = 'product'
 
 
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name='additional_images', on_delete=models.CASCADE)
+    image = models.TextField() 
+    
+    def __str__(self):
+        return f"Image for {self.product.name}"
+
+    class Meta:
+        db_table = 'product_image'
+
 class ImageSlider(models.Model):
     name = models.CharField(max_length=255, unique=True)  # Name of the slider item
     image = models.TextField(null=True, blank=True) 

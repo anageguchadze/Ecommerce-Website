@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, SubCategoryViewSet, ProductViewSet, NewArrivalsView, BestSellersView, ImageSliderListView, ProductRatingView, ProductsByCategoryView
+from .views import CategoryViewSet, SubCategoryViewSet, ProductViewSet, NewArrivalsView, BestSellersView, ImageSliderListView, ProductRatingView, ProductsByCategoryView, ProductImageView
 
 router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
@@ -14,4 +14,5 @@ urlpatterns = [
     path('image-sliders/', ImageSliderListView.as_view(), name='image_slider_list'),
     path('products/<int:product_id>/rate/', ProductRatingView.as_view(), name='product_rating'),
     path('categories/<str:category_name>/products/', ProductsByCategoryView.as_view(), name='products_by_category'),
+    path('products/<int:product_id>/images/', ProductImageView.as_view(), name='product_images'),
 ]
