@@ -16,6 +16,24 @@ class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [AllowAny]
+    
+
+class ProductsByCategoryView(APIView):
+    permission_classes = [AllowAny]  # Allow anyone to access this endpoint
+
+    def get(self, request, category_name):
+        try:
+            # Fetch the category by name (case-insensitive)
+            category = Category.objects.get(name__iexact=category_name)
+        except Category.DoesNotExist:
+            return Response({"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Fetch all active products in the category
+        products = Product.objects.filter(category=category, is_active=True)
+
+        # Serialize the products
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SubCategoryViewSet(viewsets.ModelViewSet):
