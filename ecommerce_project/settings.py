@@ -1,6 +1,5 @@
 from pathlib import Path
 from datetime import timedelta
-import os
 
 
 
@@ -36,11 +35,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     "corsheaders",
-    'django.contrib.sites',       # Required by django-allauth
-    'allauth',                    # Core allauth app
-    'allauth.account',            # Email/username authentication
-    'allauth.socialaccount',      # Social authentication
-    'allauth.socialaccount.providers.google',  # Google authentication provider
     'auth_app',
     'product_app',
     'sales_app',
@@ -55,7 +49,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'allauth.account.middleware.AccountMiddleware', 
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -152,5 +145,3 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
-
-SITE_ID = 1

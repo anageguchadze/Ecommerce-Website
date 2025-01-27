@@ -10,7 +10,6 @@ cryptography==43.0.1
 decorator==5.1.1
 defusedxml==0.8.0rc2
 Django==5.0.7
-django-allauth==65.3.1
 django-cors-headers==4.6.0
 django-extensions==3.2.3
 django-filter==24.3
@@ -20,10 +19,7 @@ djangorestframework-simplejwt==5.3.1
 djoser==2.2.3
 drf-yasg==1.21.7
 executing==2.0.1
-google-api-core==2.20.0
-google-auth==2.35.0
 google-cloud-texttospeech==2.17.2
-googleapis-common-protos==1.65.0
 grpcio==1.66.2
 grpcio-status==1.66.2
 gTTS==2.5.3
@@ -63,8 +59,6 @@ requests-oauthlib==2.0.0
 rsa==4.9
 setuptools==75.1.0
 six==1.16.0
-social-auth-app-django==5.4.2
-social-auth-core==4.5.4
 SpeechRecognition==3.12.0
 sqlparse==0.5.1
 stack-data==0.6.3
