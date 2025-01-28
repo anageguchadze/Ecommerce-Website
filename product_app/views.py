@@ -42,6 +42,24 @@ class SubCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
 
 
+class ProductsBySubCategoryView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, subcategory_name, *args, **kwargs):
+        # Try to fetch the subcategory based on the provided subcategory name
+        try:
+            subcategory = SubCategory.objects.get(sub_name=subcategory_name)
+        except SubCategory.DoesNotExist:
+            return Response({"error": "Subcategory not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Filter products by this subcategory
+        products = Product.objects.filter(subcategory=subcategory, is_active=True)
+
+        # Serialize the products
+        serializer = ProductSerializer(products, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
