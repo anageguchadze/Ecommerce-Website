@@ -22,6 +22,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser):
     name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(unique=True, blank=False, null=False)  # Ensure email cannot be blank
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     password = models.CharField(max_length=255)  # This will still be used internally but stored as hashed password

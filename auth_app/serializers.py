@@ -89,3 +89,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['name', 'email', 'phone_number', 'addresses']
+        
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    email = serializers.ReadOnlyField()  # Email is read-only
+    phone_number = serializers.ReadOnlyField()  # Phone number is read-only
+
+    class Meta:
+        model = CustomUser
+        fields = ['name', 'last_name', 'email', 'phone_number']
+
+    def update(self, instance, validated_data):
+        # Update user details
+        instance.name = validated_data.get('name', instance.name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
+        instance.save()
+        return instance

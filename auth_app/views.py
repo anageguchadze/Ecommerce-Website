@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import RegisterSerializer, LoginSerializer, PasswordChangeSerializer, AddressSerializer
+from .serializers import RegisterSerializer, LoginSerializer, PasswordChangeSerializer, AddressSerializer, ProfileUpdateSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout
 from rest_framework.generics import GenericAPIView
@@ -124,3 +124,20 @@ class AddressView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
         
+class ProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # Fetch the current user's profile
+        user = request.user
+        serializer = ProfileUpdateSerializer(user)
+        return Response(serializer.data, status=200)
+
+    def put(self, request):
+        # Update the user's profile
+        user = request.user
+        serializer = ProfileUpdateSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Profile updated successfully."}, status=200)
+        return Response(serializer.errors, status=400)
