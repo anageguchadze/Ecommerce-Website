@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, LoginView, LogoutView, AddressView, PasswordChangeView, ProfileUpdateView
+from .views import RegisterView, LoginView, LogoutView, AddressView, PasswordChangeView, ProfileUpdateView, GoogleAuthView
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('address/', AddressView.as_view(), name='address_view'),
     path('change-password/', PasswordChangeView.as_view(), name='change_password'),
     path('profile/', ProfileUpdateView.as_view(), name='profile_update'),
+    path('google-auth/', GoogleAuthView.as_view(), name='google_auth'),
 ]

@@ -105,3 +105,13 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
         return instance
+    
+
+class GoogleAuthSerializer(serializers.Serializer):
+    id_token = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        id_token = attrs.get('id_token')
+        if not id_token:
+            raise serializers.ValidationError({"id_token": "Missing Google ID token."})
+        return attrs

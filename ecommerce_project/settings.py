@@ -133,7 +133,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication', 
     ],
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ],
 }
 
@@ -149,3 +149,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+GOOGLE_CLIENT_ID = '185545339188-5tc5maei3ak5qqodqu3dbt814fnsp5st.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = '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'

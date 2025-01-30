@@ -2,12 +2,15 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .serializers import RegisterSerializer, LoginSerializer, PasswordChangeSerializer, AddressSerializer, ProfileUpdateSerializer
+from .serializers import RegisterSerializer, LoginSerializer, PasswordChangeSerializer, AddressSerializer, ProfileUpdateSerializer, GoogleAuthSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import logout
 from rest_framework.generics import GenericAPIView
 from django.contrib.auth import update_session_auth_hash
-from .models import Address
+from .models import Address, CustomUser
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from django.conf import settings
 
 class RegisterView(GenericAPIView):
     permission_classes = [AllowAny]
@@ -141,3 +144,60 @@ class ProfileUpdateView(APIView):
             serializer.save()
             return Response({"message": "Profile updated successfully."}, status=200)
         return Response(serializer.errors, status=400)
+    
+
+
+class GoogleAuthView(GenericAPIView):
+    """
+    POST endpoint to exchange a Google ID token for our own JWT tokens.
+    """
+    serializer_class = GoogleAuthSerializer
+
+    def post(self, request, *args, **kwargs):
+        # 1. Validate incoming data (which should contain the 'id_token')
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        id_token_value = serializer.validated_data.get('id_token')
+        
+        try: 
+            # 2. Verify the token using Google's library
+            #    You must pass the same 'audience' as your front-end's OAuth 2.0 client ID
+            google_info = id_token.verify_oauth2_token(
+                id_token_value,
+                requests.Request(),
+                settings.GOOGLE_CLIENT_ID,
+                clock_skew_in_seconds=200 
+            )
+        except ValueError as e:
+            # Token is invalid
+            return Response({"detail": "Invalid Google token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 3. google_info will contain user details from Google if token is valid
+        #    typical fields: 'email', 'email_verified', 'sub' (unique user id from Google), 'name', 'picture', etc.
+
+        google_email = google_info.get('email')
+
+        # You could also check google_info.get('email_verified') if needed.
+        
+        if not google_email:
+            return Response({"detail": "No email found in Google token."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 4. Create or retrieve the user from the DB
+        user, created = CustomUser.objects.get_or_create(email=google_email)
+        
+        # If user was newly created, optionally create the verification code entry
+        if created:
+            user.set_password('admin123@@')  # Set a random password
+            user.save()
+        
+        # 5. Generate JWT tokens via SimpleJWT
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        # 6. Return tokens
+        return Response({
+            "refresh": str(refresh),
+            "access": access_token,
+            "email": user.email,
+        }, status=status.HTTP_200_OK)
