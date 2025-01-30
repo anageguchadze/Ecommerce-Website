@@ -1,6 +1,10 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+ 
+ 
+load_dotenv()
 
 
 
@@ -150,5 +154,5 @@ CORS_ALLOW_ALL_ORIGINS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-GOOGLE_CLIENT_ID = '185545339188-5tc5maei3ak5qqodqu3dbt814fnsp5st.apps.googleusercontent.com'
-GOOGLE_CLIENT_SECRET = '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'
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
