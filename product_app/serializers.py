@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Category, SubCategory, Product, Size, ImageSlider, ProductRating, ProductImage
+from .models import Category, SubCategory, Product, Size, ImageSlider, ProductRating, ProductImage, Color
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -11,6 +11,11 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubCategory
+        fields = '__all__'
+
+class ColorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Color
         fields = '__all__'
 
 class SizeSerializer(serializers.ModelSerializer):
@@ -29,6 +34,7 @@ class ProductSerializer(serializers.ModelSerializer):
     size = SizeSerializer(many=True, read_only=True)
     average_rating = serializers.FloatField(read_only=True)
     additional_images = ProductImageSerializer(many=True, read_only=True)
+    color = ColorSerializer(many=True, read_only=True)
     
     class Meta:
         model = Product

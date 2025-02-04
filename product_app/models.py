@@ -25,6 +25,15 @@ class SubCategory(models.Model):
         db_table = 'subcategory'
 
 
+class Color(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        db_table = 'color'
+
 class Size(models.Model):
     name = models.CharField(max_length=50, unique=True)
 
@@ -47,7 +56,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     discount = models.PositiveIntegerField(default=0)
     final_price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    colour = models.CharField(max_length=255, blank=True, null=True)
+    color = models.ManyToManyField(Color, related_name='products', blank=True)
     size = models.ManyToManyField(Size, related_name='products', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     
