@@ -98,7 +98,7 @@ class ProductImage(models.Model):
         db_table = 'product_image'
 
 class ImageSlider(models.Model):
-    name = models.CharField(max_length=255, unique=True)  # Name of the slider item
+    name = models.CharField(max_length=255, unique=True) 
     image = models.TextField(null=True, blank=True) 
 
     def __str__(self):
@@ -110,11 +110,11 @@ class ImageSlider(models.Model):
 
 class ProductRating(models.Model):
     product = models.ForeignKey(Product, related_name='ratings', on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)  # Optional for guests
-    session_id = models.CharField(max_length=255, null=True, blank=True)  # Guest tracking
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True) 
+    session_id = models.CharField(max_length=255, null=True, blank=True) 
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('product', 'user', 'session_id')  # Ensure one rating per user/session
+        unique_together = ('product', 'user', 'session_id')  
         db_table = 'product_rating'

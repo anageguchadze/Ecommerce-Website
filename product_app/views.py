@@ -19,7 +19,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
 
 class ProductsByCategoryView(APIView):
-    permission_classes = [AllowAny]  # Allow anyone to access this endpoint
+    permission_classes = [AllowAny] 
 
     def get(self, request, category_name):
         try:
@@ -51,10 +51,8 @@ class ProductsBySubCategoryView(APIView):
         except SubCategory.DoesNotExist:
             return Response({"error": "Subcategory not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Filter products by this subcategory
         products = Product.objects.filter(subcategory=subcategory, is_active=True)
 
-        # Serialize the products
         serializer = ProductSerializer(products, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -65,7 +63,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [AllowAny]
     
-    filter_backends = [SearchFilter]  # Enable search filter
+    filter_backends = [SearchFilter]  
     search_fields = ['name']  
 
 

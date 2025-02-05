@@ -7,7 +7,7 @@ class CategorySerializer(serializers.ModelSerializer):
         ref_name = 'CategorySerializer_product_app'
 
 class SubCategorySerializer(serializers.ModelSerializer):
-    category = CategorySerializer()  # Nested Category Serializer
+    category = CategorySerializer() 
 
     class Meta:
         model = SubCategory
@@ -48,7 +48,7 @@ class ImageSliderSerializer(serializers.ModelSerializer):
 
     
 class ProductRatingSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)  # Automatically set the user from the request
+    user = serializers.PrimaryKeyRelatedField(read_only=True) 
 
     class Meta:
         model = ProductRating
