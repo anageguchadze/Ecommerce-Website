@@ -48,6 +48,7 @@ class ProductSerializer(serializers.ModelSerializer):
     additional_images = ProductImageSerializer(many=True, read_only=True)
     color = ColorSerializer(many=True, read_only=True)
     ratings = ProductRatingSerializer(many=True, read_only=True)
+    vote_count = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Product
@@ -56,6 +57,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['ratings'] = ProductRating.objects.filter(product=instance).aggregate(Avg('rating'))['rating__avg']
+        representation['vote_count'] = ProductRating.objects.filter(product=instance).count()
         return representation
 
 
