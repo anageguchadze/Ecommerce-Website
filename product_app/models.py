@@ -59,7 +59,7 @@ class Product(models.Model):
     color = models.ManyToManyField(Color, related_name='products', blank=True)
     size = models.ManyToManyField(Size, related_name='products', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    
+
 
     def update_average_rating(self):
         ratings = self.ratings.all()
@@ -111,10 +111,8 @@ class ImageSlider(models.Model):
 class ProductRating(models.Model):
     product = models.ForeignKey(Product, related_name='ratings', on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True) 
-    session_id = models.CharField(max_length=255, null=True, blank=True) 
     rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('product', 'user', 'session_id')  
+        unique_together = ('product', 'user')  
         db_table = 'product_rating'
