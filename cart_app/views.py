@@ -71,6 +71,12 @@ class CartItemViewSet(ModelViewSet):
                 kwargs['data'].pop('cart')  # Prevent users from manually setting the cart
         return super().get_serializer(*args, **kwargs)
 
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.cart != request.user:
+    #         return Response({"error": "You cannot delete this item"}, status=status.HTTP_403_FORBIDDEN)
+    #     instance.delete()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 class OrderItemViewSet(ModelViewSet):
     queryset = OrderItem.objects.all()
