@@ -11,7 +11,7 @@ from .models import  CartItem, Order, OrderItem
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
-        fields = ['quantity', 'product']
+        fields = ['quantity', 'product', 'id']
 
     def __init__(self, *args, **kwargs):
         context = kwargs.get('context', None)
