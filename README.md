@@ -16,6 +16,7 @@ Live Demo
 
 Live Demo:
 https://geguchadzeadmin.pythonanywhere.com/swagger/
+https://ecommerce-colab.vercel.app/
 
 Installation:
 Prerequisites
